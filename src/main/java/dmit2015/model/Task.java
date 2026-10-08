@@ -1,5 +1,6 @@
 package dmit2015.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,13 +9,34 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.datafaker.Faker;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.random.RandomGenerator;
 
+
+//Convert Task into a JPA entity
+//
+//Update Task.java so it is mapped as a JPA entity.
+//
+//Your entity should include:
+//
+//@Entity
+//@Id
+//@GeneratedValue
+//validation annotations for required fields
+//@Version
+//createTime
+//        updateTime
+//@PrePersist
+//@PreUpdate
+
+@Entity
 @Data
 @NoArgsConstructor
 public class Task {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @NotBlank(message = "Description is required")
@@ -26,6 +48,24 @@ public class Task {
     private TaskPriority priority;
 
     private boolean done;
+
+    @Version
+    private Integer version;
+
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+
+    @PrePersist
+    void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        createTime = now;
+        updateTime = now;
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        updateTime = LocalDateTime.now();
+    }
 
     // Copy constructor
     public Task(Task other) {
